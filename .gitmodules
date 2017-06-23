@@ -1,3 +1,6 @@
 [submodule "wishbone"]
 	path = wishbone
 	url = git://github.com/srmcc/wishbone.git
+[submodule "clustering_on_transcript_compatibility_counts"]
+	path = clustering_on_transcript_compatibility_counts
+	url = git://github.com/srmcc/clustering_on_transcript_compatibility_counts.git
