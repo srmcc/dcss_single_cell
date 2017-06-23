@@ -1,0 +1,3 @@
+[submodule "wishbone"]
+	path = wishbone
+	url = git://github.com/srmcc/wishbone.git
