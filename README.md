@@ -18,7 +18,7 @@ conda env create -f env.yml
 In order to run the code, first clone this repository and the submodules.
 
 ```bash
-git clone --recursive https://github.com/srmcc/dcss_single_cell
+git clone --recursive https://github.com/srmcc/dcss_single_cell.git
 ```
 Then activate your conda environment:
 
