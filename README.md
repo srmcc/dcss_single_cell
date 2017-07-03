@@ -25,6 +25,10 @@ Then activate your conda environment:
 ```bash
 source activate wishbone
 ```
+or 
+```bash
+source activate clustering
+```
 Change directory to the cloned repository:
 ```bash
 cd to /path/to/dcss_single_cell/src/dcss/
@@ -32,6 +36,10 @@ cd to /path/to/dcss_single_cell/src/dcss/
 And run the analysis files.
 ```bash
 python analysis_wishbone.py
+```
+or 
+```bash
+python analysis_zeisel.py
 ```
 The user experience and documentation for this package are still under construction.
 
