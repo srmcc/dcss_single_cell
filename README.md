@@ -39,7 +39,7 @@ python analysis_wishbone.py
 ```
 or 
 ```bash
-python analysis_zeisel.py
+python analysis_clustering.py
 ```
 The user experience and documentation for this package are still under construction.
 
