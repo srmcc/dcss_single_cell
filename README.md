@@ -1,4 +1,4 @@
-# Deterministic column subset selection for single-cell RNA-Seq
+# Deterministic Column Subset Selection for single-cell RNA-Seq
 
 This repository has been developed to reproduce the results in McCurdy, Ntranos, and Pachter (2017, BIORXIV/2017/159079).  We implement the deterministic column subset selection (DCSS) algorithm (Papailiopoulos, Kyrillidis, and Boutsidis, 2014).  We integrate the DCSS method and three comparision thresholding methods into two workflows for clustering (clustering_on_transcript_compatibility_counts and wishbone, forked into this repository) and apply it to two single-cell RNA-Seq datasets (Paul et al., 2015; Zeisel et al. 2015).  This repository will download the datasets for you.
 
@@ -8,7 +8,7 @@ To run this code you will need to install all of the dependencies for clustering
 conda env create -f env.yml 
 #
 # To activate this environment, use:
-# $ source activate survival
+# $ source activate env
 #
 # To deactivate this environment, use:
 # $ source deactivate
