@@ -422,23 +422,27 @@ def get_max_wt_matching(row_label,column_label, weight_matrix):
     for u,v in H.items(): max_wt+=G[u][v]["weight"]/float(2)
     return max_wt
 
-def compute_clustering_accuracy(label1, label2):
+def compute_clustering_accuracy(label1, label2, type='ARI'):
     """
-    From clustering_on_transcript_compatibility_counts, see github for MIT license
+    type== 'ARI' is adjusted rand index.
+    type!='ARI' is  clustering error.  From clustering_on_transcript_compatibility_counts, see github for MIT license
     """
-    uniq1,uniq2 = np.unique(label1),np.unique(label2)
-    # Create two dictionaries. Each will store the indices of each label
-    entries1,entries2 = {},{}
-    for label in uniq1: entries1[label] = set(np.flatnonzero((label1==label)))
-    for label in uniq2: entries2[label] = set(np.flatnonzero((label2==label)))
-    # Create an intersection matrix which counts the number of entries that overlap for each label combination        
-    W = np.zeros((len(uniq1),len(uniq2)))
-    for i,j in itertools.product(range(len(uniq1)),range(len(uniq2))):
-        W[i,j]=len(entries1[uniq1[i]].intersection(entries2[uniq2[j]]))
-    # find the max weight matching
-    match_val = get_max_wt_matching(uniq1,uniq2,W)
-    # return the error rate
-    return (1-match_val/float(len(label1)))*100
+    if type == 'ARI':
+        return(sklearn.metrics.adjusted_rand_score(label1, label2))
+    else:
+        uniq1,uniq2 = np.unique(label1),np.unique(label2)
+        # Create two dictionaries. Each will store the indices of each label
+        entries1,entries2 = {},{}
+        for label in uniq1: entries1[label] = set(np.flatnonzero((label1==label)))
+        for label in uniq2: entries2[label] = set(np.flatnonzero((label2==label)))
+        # Create an intersection matrix which counts the number of entries that overlap for each label combination        
+        W = np.zeros((len(uniq1),len(uniq2)))
+        for i,j in itertools.product(range(len(uniq1)),range(len(uniq2))):
+            W[i,j]=len(entries1[uniq1[i]].intersection(entries2[uniq2[j]]))
+        # find the max weight matching
+        match_val = get_max_wt_matching(uniq1,uniq2,W)
+        # return the error rate
+        return (1-match_val/float(len(label1)))*100
 
 def load_labels():
     """
@@ -1092,7 +1096,8 @@ def plot_error_rate(err, kset, eork_fixed, k, epsilon, num_clust='2', data_type=
         elif eork_fixed=='k':
             ax.legend(loc='upper left')
             ax.set_xlabel(r'$\epsilon$, for k=' + str(k)+' DCSS')
-        ax.set_ylabel('Clustering error rate (%)')
+        ax.set_ylabel('Clustering adjusted Rand index')
+        #ax.set_ylabel('Clustering error rate (%)')
         #plt.title('Zeisel et al. Clustering Error Rate Compared to Full Data')
         fig.tight_layout()
         if eork_fixed=='epsilon':
@@ -1110,7 +1115,8 @@ def plot_error_rate(err, kset, eork_fixed, k, epsilon, num_clust='2', data_type=
             ax.set_xlabel(r'k for DCSS, $\epsilon$=' +str(epsilon))
         elif eork_fixed=='k':
             ax.set_xlabel(r'$\epsilon$, for k=' + str(k)+' DCSS')
-        ax.set_ylabel('Branch assignment error rate (%)')
+        ax.set_ylabel('Branch assignment error adjusted Rand index')
+        #ax.set_ylabel('Branch assignment error rate (%)')
         #plt.title('Zeisel et al. Clustering Error Rate Compared to Full Data')
         if eork_fixed=='epsilon':
             plt.savefig(plot_loc+'plot_clustering_error_' +str(epsilon).replace('.', '')+'.pdf',  bbox_extra_artists=(lgd,), bbox_inches='tight')
