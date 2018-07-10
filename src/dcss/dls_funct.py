@@ -1115,7 +1115,7 @@ def plot_error_rate(err, kset, eork_fixed, k, epsilon, num_clust='2', data_type=
             ax.set_xlabel(r'k for DCSS, $\epsilon$=' +str(epsilon))
         elif eork_fixed=='k':
             ax.set_xlabel(r'$\epsilon$, for k=' + str(k)+' DCSS')
-        ax.set_ylabel('Branch assignment error adjusted Rand index')
+        ax.set_ylabel('Branch assignment adjusted Rand index')
         #ax.set_ylabel('Branch assignment error rate (%)')
         #plt.title('Zeisel et al. Clustering Error Rate Compared to Full Data')
         if eork_fixed=='epsilon':
