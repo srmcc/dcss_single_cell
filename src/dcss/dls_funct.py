@@ -1091,10 +1091,10 @@ def plot_error_rate(err, kset, eork_fixed, k, epsilon, num_clust='2', data_type=
 
         ax.set_xticks(kset)
         if eork_fixed=='epsilon':
-            ax.legend(loc='upper right')
+            ax.legend(loc='lower right')
             ax.set_xlabel(r'k for DCSS, $\epsilon$=' + str(epsilon))
         elif eork_fixed=='k':
-            ax.legend(loc='upper left')
+            ax.legend(loc='lower left')
             ax.set_xlabel(r'$\epsilon$, for k=' + str(k)+' DCSS')
         ax.set_ylabel('Clustering adjusted Rand index')
         #ax.set_ylabel('Clustering error rate (%)')
