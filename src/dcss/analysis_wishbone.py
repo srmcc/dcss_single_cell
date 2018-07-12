@@ -45,6 +45,10 @@ dls_funct.plot_eigenvalues(scipy.sparse.csr_matrix(scdata_raw.data), n_eig, plot
 k=14
 epsilon=0.05
 
+##time report
+dls_funct.wishbone_time_report(scdata_raw, k, epsilon, analysis_dir)
+
+
 #making a bunch of plots and calculating the umi depth
 dls_funct.wishbone_powerlaw_meanvar_index_comparision_gene_set(scdata_raw, k, epsilon, analysis_dir, plot_loc)
 

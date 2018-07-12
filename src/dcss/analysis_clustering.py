@@ -103,6 +103,10 @@ dls_funct.plot_eigenvalues(TCC, n_eig, plot_loc)
 epsilon=0.1
 k=5
 
+##time report
+dls_funct.zeisel_time_report(TCC, k, epsilon, analysis_dir)
+
+
 #making a bunch of plots and calculating the umi depth
 dls_funct.zeisel_powerlaw_meanvar_index_comparision_gene_set(TCC, k, epsilon, analysis_dir, plot_loc, num_processes, TCC_flname[:-4], TCC_dist_flname[:-4], TCC_distance_flname[:-4])
 
@@ -169,8 +173,6 @@ with open(analysis_dir + 'err_epsilon_'+ str(k)+'.dat', 'rb') as infile:
 ##epsilon set
 dls_funct.plot_error_rate(err_epsilon , epset, 'k', k, '', num_clust='2', data_type='TCC', plot_loc=plot_loc)
 dls_funct.plot_error_rate(err_epsilon , epset, 'k', k, '', num_clust='9', data_type='TCC', plot_loc=plot_loc)
-
-
 
 
 

@@ -16,6 +16,7 @@ import sys
 import imp
 import multiprocessing
 import traceback
+from resource import getrusage as resource_usage, RUSAGE_SELF
 
 import matplotlib
 #workaround for x - windows
@@ -98,9 +99,9 @@ def plot_tau(tau_sorted, theta, k, plot_loc):
 
 def make_leverage_norm_jsdistance(TCC, V, k, epsilon, TCC_dls_flname, TCC_dls_dist_flname, TCC_dls_distance_flname, num_processes, plot_loc):
     theta_TCC, index_keep_TCC, tau_sorted, index_drop = det_leverage(V, k, epsilon)
+        with open(TCC_dls_flname, 'wb') as outfile:
     TCC_dls= TCC[:, index_keep_TCC]
     if not os.path.exists(TCC_dls_flname):
-        with open(TCC_dls_flname, 'wb') as outfile:
                 pickle.dump(scipy.sparse.csr_matrix( TCC_dls.todense()), outfile, pickle.HIGHEST_PROTOCOL)   
     if not os.path.exists(TCC_dls_dist_flname):
         TCC_dls_dist= sklearn.preprocessing.normalize(TCC_dls, norm='l1', axis=1)
@@ -717,8 +718,27 @@ def make_zeisel_error(D, TCC, k, epsilon, analysis_dir, plot_loc, num_processes,
     return(error)
 
 
+def zeisel_time_report(TCC, k, epsilon, analysis_dir):
+    start_time, start_resources = time(), resource_usage(RUSAGE_SELF)
+    TCC_svd = scipy.sparse.linalg.svds(TCC, k)
+    V=pd.DataFrame(TCC_svd[2].T)
+    theta_TCC, index_keep_TCC, tau_sorted, index_drop = det_leverage(V, k, epsilon)
+    end_resources, end_time = resource_usage(RUSAGE_SELF), time()
+    with open(analysis_dir + 'TCC_time_report_'+str(k)+ '_'+ str(epsilon).replace('.', '')+ '.txt' ,'w') as f:
+        f.write('real:' +str(end_time - start_time) + '\n')
+        f.write('sys:' +str(end_resources.ru_stime - start_resources.ru_stime)+ '\n')
+        f.write('user:' + str(end_resources.ru_utime - start_resources.ru_utime)+ '\n')
 
-
+def wishbone_time_report(scdata_raw, k, epsilon, analysis_dir):
+    start_time, start_resources = time(), resource_usage(RUSAGE_SELF)###dls before norm
+    U, lamb, Vt_raw = scipy.sparse.linalg.svds(scipy.sparse.csr_matrix(scdata_raw.data), k)
+    V_raw=pd.DataFrame(Vt_raw.T)
+    theta_dls, index_keep_dls,tau_sorted, index_drop = det_leverage(V_raw, k, epsilon)
+    end_resources, end_time = resource_usage(RUSAGE_SELF), time()
+    with open(analysis_dir + 'wishbone_time_report_'+str(k)+ '_'+ str(epsilon).replace('.', '')+ '.txt' ,'w') as f:
+        f.write('real:' +str(end_time - start_time) + '\n')
+        f.write('sys:' +str(end_resources.ru_stime - start_resources.ru_stime)+ '\n')
+        f.write('user:' + str(end_resources.ru_utime - start_resources.ru_utime)+ '\n')
 
 def wishbone_my_setup(setup_dir):
     # install GSEA, diffusion components, and download data.
