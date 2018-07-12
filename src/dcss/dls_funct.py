@@ -99,9 +99,9 @@ def plot_tau(tau_sorted, theta, k, plot_loc):
 
 def make_leverage_norm_jsdistance(TCC, V, k, epsilon, TCC_dls_flname, TCC_dls_dist_flname, TCC_dls_distance_flname, num_processes, plot_loc):
     theta_TCC, index_keep_TCC, tau_sorted, index_drop = det_leverage(V, k, epsilon)
-        with open(TCC_dls_flname, 'wb') as outfile:
     TCC_dls= TCC[:, index_keep_TCC]
     if not os.path.exists(TCC_dls_flname):
+        with open(TCC_dls_flname, 'wb') as outfile:
                 pickle.dump(scipy.sparse.csr_matrix( TCC_dls.todense()), outfile, pickle.HIGHEST_PROTOCOL)   
     if not os.path.exists(TCC_dls_dist_flname):
         TCC_dls_dist= sklearn.preprocessing.normalize(TCC_dls, norm='l1', axis=1)
