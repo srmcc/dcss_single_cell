@@ -170,7 +170,7 @@ def make_leverage_norm_jsdistance(TCC, V, k, epsilon, TCC_dls_flname, TCC_dls_di
 #     assert np.all(np.isclose(np.diag(D_lc),np.zeros(np.diag(D_lc).shape)))
 #     return(TCC_lc, TCC_lc_dist, D_lc, counts_keep_bool, umi_depth)
 
-def make_norm_jsdistance(TCC, columns_dls, TCC_lc_dist_flname, TCC_lc_distance_flname, num_processes, filter_type, distance=True):
+def make_norm_jsdistance(TCC, columns_dls, TCC_lc_dist_flname, TCC_lc_distance_flname, num_processes, filter_type, distance=True, k=5):
     ## filter top features based on counts.
     if python_version == '2':
         nonzero_bool=(np.array(TCC.sum(axis=0))[0,:] >0)
@@ -179,49 +179,60 @@ def make_norm_jsdistance(TCC, columns_dls, TCC_lc_dist_flname, TCC_lc_distance_f
         nonzero_bool=(np.array(TCC.sum(axis=0))>0)
         TCC=TCC[:, nonzero_bool]
     print('shape non-zero TCC', TCC.shape)
-    if python_version == '2':
-        if filter_type=='counts':
-            min_keep= sorted(np.array(TCC.sum(axis=0))[0,:], reverse=True)[columns_dls]
-            keep_bool=(np.array(TCC.sum(axis=0))[0,:] >min_keep)
-        if filter_type == 'std':
-            scaler = sklearn.preprocessing.StandardScaler(with_mean=False).fit(TCC)
-            min_keep= sorted(scaler.std_, reverse=True)[columns_dls]
-            keep_bool=(scaler.std_ >min_keep)
-        if filter_type=='coeff_var':
-            scaler = sklearn.preprocessing.StandardScaler(with_mean=False).fit(TCC)
-            mean= np.array(TCC.sum(axis=0))[0,:]/TCC.shape[0]
-            coeff_var=scaler.std_/mean
-            min_keep= sorted(coeff_var, reverse=True)[columns_dls]
-            keep_bool=(coeff_var > min_keep)
-        if filter_type == 'index_disp':
-            scaler = sklearn.preprocessing.StandardScaler(with_mean=False).fit(TCC)
-            mean= np.array(TCC.sum(axis=0))[0,:]/TCC.shape[0]
-            index_disp=scaler.std_**2/mean
-            min_keep= sorted(index_disp, reverse=True)[columns_dls]
-            keep_bool=(index_disp > min_keep)
-    elif python_version == '3':
-        if filter_type=='counts':
-            min_keep= sorted(np.array(TCC.sum(axis=0)), reverse=True)[columns_dls]
-            keep_bool=(np.array(TCC.sum(axis=0)) >min_keep)
-        if filter_type == 'std':
-            scaler = sklearn.preprocessing.StandardScaler(with_mean=False).fit(TCC)
-            min_keep= sorted(scaler.std_, reverse=True)[columns_dls]
-            keep_bool=(scaler.std_ >min_keep)
-        if filter_type=='coeff_var':
-            scaler = sklearn.preprocessing.StandardScaler(with_mean=False).fit(TCC)
-            mean= np.array(TCC.sum(axis=0))/TCC.shape[0]
-            coeff_var=scaler.std_/mean
-            min_keep= sorted(coeff_var, reverse=True)[columns_dls]
-            keep_bool=(coeff_var > min_keep)
-        if filter_type == 'index_disp':
-            scaler = sklearn.preprocessing.StandardScaler(with_mean=False).fit(TCC)
-            mean= np.array(TCC.sum(axis=0))/TCC.shape[0]
-            index_disp=scaler.std_**2/mean
-            min_keep= sorted(index_disp, reverse=True)[columns_dls]
-            keep_bool=(index_disp > min_keep)
-    print('type, min_keep', filter_type, min_keep)
-    TCC_lc= TCC[:, keep_bool]
-    umi_depth=TCC_lc.sum()/TCC.sum()
+    if filter_type =='svd':
+        print('type', filter_type)
+        TCC_svd = scipy.sparse.linalg.svds(TCC, k)
+        TCC_lc=TCC_svd[0].dot(np.diag(TCC_svd[1])) ##svd truncation
+        umi_depth= 0
+        min_keep=0
+        keep_bool=0
+        
+    else: 
+        if python_version == '2':
+            if filter_type=='counts':
+                min_keep= sorted(np.array(TCC.sum(axis=0))[0,:], reverse=True)[columns_dls]
+                keep_bool=(np.array(TCC.sum(axis=0))[0,:] >min_keep)
+            if filter_type == 'std':
+                scaler = sklearn.preprocessing.StandardScaler(with_mean=False).fit(TCC)
+                min_keep= sorted(scaler.std_, reverse=True)[columns_dls]
+                keep_bool=(scaler.std_ >min_keep)
+            if filter_type=='coeff_var':
+                scaler = sklearn.preprocessing.StandardScaler(with_mean=False).fit(TCC)
+                mean= np.array(TCC.sum(axis=0))[0,:]/TCC.shape[0]
+                coeff_var=scaler.std_/mean
+                min_keep= sorted(coeff_var, reverse=True)[columns_dls]
+                keep_bool=(coeff_var > min_keep)
+            if filter_type == 'index_disp':
+                scaler = sklearn.preprocessing.StandardScaler(with_mean=False).fit(TCC)
+                mean= np.array(TCC.sum(axis=0))[0,:]/TCC.shape[0]
+                index_disp=scaler.std_**2/mean
+                min_keep= sorted(index_disp, reverse=True)[columns_dls]
+                keep_bool=(index_disp > min_keep)
+
+        elif python_version == '3':
+            if filter_type=='counts':
+                min_keep= sorted(np.array(TCC.sum(axis=0)), reverse=True)[columns_dls]
+                keep_bool=(np.array(TCC.sum(axis=0)) >min_keep)
+            if filter_type == 'std':
+                scaler = sklearn.preprocessing.StandardScaler(with_mean=False).fit(TCC)
+                min_keep= sorted(scaler.std_, reverse=True)[columns_dls]
+                keep_bool=(scaler.std_ >min_keep)
+            if filter_type=='coeff_var':
+                scaler = sklearn.preprocessing.StandardScaler(with_mean=False).fit(TCC)
+                mean= np.array(TCC.sum(axis=0))/TCC.shape[0]
+                coeff_var=scaler.std_/mean
+                min_keep= sorted(coeff_var, reverse=True)[columns_dls]
+                keep_bool=(coeff_var > min_keep)
+            if filter_type == 'index_disp':
+                scaler = sklearn.preprocessing.StandardScaler(with_mean=False).fit(TCC)
+                mean= np.array(TCC.sum(axis=0))/TCC.shape[0]
+                index_disp=scaler.std_**2/mean
+                min_keep= sorted(index_disp, reverse=True)[columns_dls]
+                keep_bool=(index_disp > min_keep)
+
+        print('type, min_keep', filter_type, min_keep)
+        TCC_lc= TCC[:, keep_bool]
+        umi_depth=TCC_lc.sum()/TCC.sum()
     if distance==True:
         if not os.path.exists(TCC_lc_dist_flname):
             TCC_lc_dist= sklearn.preprocessing.normalize(TCC_lc, norm='l1', axis=1)
