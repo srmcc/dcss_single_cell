@@ -177,6 +177,7 @@ dls_funct.plot_error_rate(err_epsilon , epset, 'k', k, '', num_clust='9', data_t
 
 ##doing SVD to compare
 k=5
+num_processes=40
 SEED=42949678
 np.random.seed(SEED)
 TCC_svd_dist_flname=TCC_dist_flname[:-4]+"_" + 'svd_' +str(k) +".dat"

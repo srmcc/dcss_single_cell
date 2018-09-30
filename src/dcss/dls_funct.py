@@ -186,7 +186,28 @@ def make_norm_jsdistance(TCC, columns_dls, TCC_lc_dist_flname, TCC_lc_distance_f
         umi_depth= 0
         min_keep=0
         keep_bool=0
-        
+        if distance==True:
+            if not os.path.exists(TCC_lc_dist_flname):
+                TCC_lc_dist= sklearn.preprocessing.normalize(TCC_lc, norm='l1', axis=1)
+                with open(TCC_lc_dist_flname, 'wb') as outfile:
+                    pickle.dump(scipy.sparse.csr_matrix(TCC_lc_dist), outfile, pickle.HIGHEST_PROTOCOL)
+            else:
+                with open(TCC_lc_dist_flname,'rb') as infile:
+                    TCC_lc_dist= pickle.load(infile)
+            if not os.path.exists(TCC_lc_distance_flname):
+                t=time()
+                os.system('python get_pairwise_distances.py '+TCC_lc_dist_flname+' '+TCC_lc_distance_flname+' '+str(num_processes))
+                print(time() - t) / 60, 'min'
+            #filepath='./'
+            filepath=''
+            with open(filepath+TCC_lc_distance_flname ,'rb') as infile:
+                D_lc = pickle.load(infile)
+            assert np.all(np.isclose(D_lc,D_lc.T))
+            assert np.all(np.isclose(np.diag(D_lc),np.zeros(np.diag(D_lc).shape)))
+            return(TCC_lc, TCC_lc_dist, D_lc, keep_bool, umi_depth, min_keep)
+        else:
+            return(TCC_lc, keep_bool, umi_depth, min_keep)
+
     else: 
         if python_version == '2':
             if filter_type=='counts':
@@ -233,27 +254,27 @@ def make_norm_jsdistance(TCC, columns_dls, TCC_lc_dist_flname, TCC_lc_distance_f
         print('type, min_keep', filter_type, min_keep)
         TCC_lc= TCC[:, keep_bool]
         umi_depth=TCC_lc.sum()/TCC.sum()
-    if distance==True:
-        if not os.path.exists(TCC_lc_dist_flname):
-            TCC_lc_dist= sklearn.preprocessing.normalize(TCC_lc, norm='l1', axis=1)
-            with open(TCC_lc_dist_flname, 'wb') as outfile:
-                pickle.dump(scipy.sparse.csr_matrix(TCC_lc_dist.todense()), outfile, pickle.HIGHEST_PROTOCOL)
+        if distance==True:
+            if not os.path.exists(TCC_lc_dist_flname):
+                TCC_lc_dist= sklearn.preprocessing.normalize(TCC_lc, norm='l1', axis=1)
+                with open(TCC_lc_dist_flname, 'wb') as outfile:
+                    pickle.dump(scipy.sparse.csr_matrix(TCC_lc_dist.todense()), outfile, pickle.HIGHEST_PROTOCOL)
+            else:
+                with open(TCC_lc_dist_flname,'rb') as infile:
+                    TCC_lc_dist= pickle.load(infile)
+            if not os.path.exists(TCC_lc_distance_flname):
+                t=time()
+                os.system('python get_pairwise_distances.py '+TCC_lc_dist_flname+' '+TCC_lc_distance_flname+' '+str(num_processes))
+                print(time() - t) / 60, 'min'
+            #filepath='./'
+            filepath=''
+            with open(filepath+TCC_lc_distance_flname ,'rb') as infile:
+                D_lc = pickle.load(infile)
+            assert np.all(np.isclose(D_lc,D_lc.T))
+            assert np.all(np.isclose(np.diag(D_lc),np.zeros(np.diag(D_lc).shape)))
+            return(TCC_lc, TCC_lc_dist, D_lc, keep_bool, umi_depth, min_keep)
         else:
-            with open(TCC_lc_dist_flname,'rb') as infile:
-                TCC_lc_dist= pickle.load(infile)
-        if not os.path.exists(TCC_lc_distance_flname):
-            t=time()
-            os.system('python get_pairwise_distances.py '+TCC_lc_dist_flname+' '+TCC_lc_distance_flname+' '+str(num_processes))
-            print(time() - t) / 60, 'min'
-        #filepath='./'
-        filepath=''
-        with open(filepath+TCC_lc_distance_flname ,'rb') as infile:
-            D_lc = pickle.load(infile)
-        assert np.all(np.isclose(D_lc,D_lc.T))
-        assert np.all(np.isclose(np.diag(D_lc),np.zeros(np.diag(D_lc).shape)))
-        return(TCC_lc, TCC_lc_dist, D_lc, keep_bool, umi_depth, min_keep)
-    else:
-        return(TCC_lc, keep_bool, umi_depth, min_keep)
+            return(TCC_lc, keep_bool, umi_depth, min_keep)
 
 
 
