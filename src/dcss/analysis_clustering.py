@@ -175,28 +175,3 @@ dls_funct.plot_error_rate(err_epsilon , epset, 'k', k, '', num_clust='2', data_t
 dls_funct.plot_error_rate(err_epsilon , epset, 'k', k, '', num_clust='9', data_type='TCC', plot_loc=plot_loc)
 
 
-##doing SVD to compare
-k=5
-num_processes=40
-SEED=42949678
-np.random.seed(SEED)
-TCC_svd_dist_flname=TCC_dist_flname[:-4]+"_" + 'svd_' +str(k) +".dat"
-TCC_svd_distance_flname=TCC_distance_flname[:-4]+"_" + 'svd_' +str(k) +".dat"
-(TCC_svd_proj, TCC_svd_dist, D_svd, keep_bool, umi_depth, min_keep)= dls_funct.make_norm_jsdistance(TCC, 0, TCC_svd_dist_flname, TCC_svd_distance_flname, num_processes, 'svd', distance=True, k=5)
-nrep=10
-error=np.empty((nrep, 2))
-for rs in range(nrep):
-	rs = 1
-	tcc_spectral_labels2 = dls_funct.spectral(2,D, rs)
-	tcc_spectral_labels9 = dls_funct.spectral(9,D, rs)
-	tcc_spectral_labels2_svd = dls_funct.spectral(2,D_svd, rs)
-	tcc_spectral_labels9_svd = dls_funct.spectral(9,D_svd, rs)
-	c2_svd_tcc = dls_funct.compute_clustering_accuracy(tcc_spectral_labels2_svd, tcc_spectral_labels2)
-	c9_svd_tcc = dls_funct.compute_clustering_accuracy(tcc_spectral_labels9_svd, tcc_spectral_labels9)
-	error[rs, 0] = c2_svd_tcc
-	error[rs, 1] = c9_svd_tcc
-
-print('svd k=5 clustering average ARI for 2 and 9 clusters', np.mean(error[:, 0]), np.mean(error[:, 1]))
-
-
-
