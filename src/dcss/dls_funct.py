@@ -181,7 +181,8 @@ def make_norm_jsdistance(TCC, columns_dls, TCC_lc_dist_flname, TCC_lc_distance_f
     print('shape non-zero TCC', TCC.shape)
     if filter_type =='svd':
         print('type', filter_type)
-        TCC_svd = scipy.sparse.linalg.svds(TCC, k)
+        TCC_svd = scipy.linalg.svd(TCC, full_matrices=False)
+        #TCC_svd = scipy.sparse.linalg.svds(TCC, k)
         TCC_lc=TCC_svd[0].dot(np.diag(TCC_svd[1])) ##svd truncation
         #TCC_lc=TCC_svd[0].dot(np.diag(TCC_svd[1])).dot(TCC_svd[2]) ##svd projection
         umi_depth= 0
