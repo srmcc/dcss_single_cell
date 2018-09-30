@@ -126,9 +126,9 @@ dls_funct.plot_error_rate(err_epsilon , epset, 'k', k, '', num_clust='', data_ty
 k=14
 SEED=42949678
 np.random.seed(SEED)
-(scdata_raw_svd,  svd_keep_bool, svd_umi_depth, svd_min_keep)=dls_funct.make_norm_jsdistance(scdata_raw.data.values, 0, 'none', 'none', 1, 'std', distance=False, k=14)
-scdata_raw_svd= wishbone.wb.SCData(scdata_raw_svd, 'sc-seq')
-components_lists=[wishbone_pipeline(scdata_raw_svd, 'svd_'+ str(k), analysis_dir)]
+(scdata_raw_svd,  svd_keep_bool, svd_umi_depth, svd_min_keep)=dls_funct.make_norm_jsdistance(scdata_raw.data.values, 0, 'none', 'none', 1, 'svd', distance=False, k=14)
+scdata_raw_svd= wishbone.wb.SCData(pd.DataFrame(scdata_raw_svd, index=scdata_raw.data.index, columns=['SVD' + str(x) for x in range(k)] ), 'sc-seq')
+components_lists=[dls_funct.wishbone_pipeline(scdata_raw_svd, 'svd_' + str(k), analysis_dir)]
 scdata_list=[wishbone.wb.SCData.load(analysis_dir + 'mouse_marrow_scdata_' + 'svd_'+ str(k)+ '.p')]
 error=np.zeros((nrep, 1))
 pool = multiprocessing.Pool(num_processes)
