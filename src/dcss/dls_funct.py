@@ -184,7 +184,7 @@ def make_norm_jsdistance(TCC, columns_dls, TCC_lc_dist_flname, TCC_lc_distance_f
         TCC_svd = scipy.linalg.svd(TCC, full_matrices=False)
         #TCC_svd = scipy.sparse.linalg.svds(TCC, k)
         #TCC_lc=TCC_svd[0].dot(np.diag(TCC_svd[1])) ##svd truncation
-        TCC_lc=TCC_svd[0].dot(np.diag(TCC_svd[1])).dot(TCC_svd[2]) ##svd projection
+        TCC_lc=TCC_svd[0][:, 0:k].dot(np.diag(TCC_svd[1][:, 0:k])).dot(TCC_svd[2][:, 0:k]) ##svd projection
         umi_depth= 0
         min_keep=0
         keep_bool=0

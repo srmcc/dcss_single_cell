@@ -127,9 +127,11 @@ k=14
 SEED=42949678
 np.random.seed(SEED)
 (scdata_raw_svd,  svd_keep_bool, svd_umi_depth, svd_min_keep)=dls_funct.make_norm_jsdistance(scdata_raw.data.values, 0, 'none', 'none', 1, 'svd', distance=False, k=14)
-scdata_raw_svd= wishbone.wb.SCData(pd.DataFrame(scdata_raw_svd, index=scdata_raw.data.index, columns=['SVD' + str(x) for x in range(k)] ), 'sc-seq')
+scdata_raw_svd= wishbone.wb.SCData(pd.DataFrame(scdata_raw_svd, index=scdata_raw.data.index, columns=scdata.data.columns ), 'sc-seq')
 components_lists=[dls_funct.wishbone_pipeline(scdata_raw_svd, 'svd_' + str(k), analysis_dir)]
 scdata_list=[wishbone.wb.SCData.load(analysis_dir + 'mouse_marrow_scdata_' + 'svd_'+ str(k)+ '.p')]
+# wb_item= wishbone.wb.Wishbone(scdata_list[0])
+# wb_item.run_wishbone(start_cell='W30258', components_list=components_lists[0], num_waypoints=250)
 error=np.zeros((nrep, 1))
 pool = multiprocessing.Pool(num_processes)
 results = pool.map_async(dls_funct.error_multi_wrapper,
@@ -142,5 +144,7 @@ results = results.get()
 for i, item in enumerate(scdata_list):
     for rs in range(nrep):
         error[rs, i] = results[i*nrep + rs]
+
+
 print('svd k=14 clustering average ARI',np.mean(error[:, 0]))
 
